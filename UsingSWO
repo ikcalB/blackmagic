@@ -16,7 +16,7 @@ We are constrained on maximum input speed by both the capabilities of the
 BMP STM32F103 USART and the ability to get the packets back out over the USB
 link. The UART baudrate is set by b=(72x10^6)/d...with d >= 16 or
 a maximum speed of 4.5Mbps UART1 and 2.25 Mbps on UART2.
-For continious streaming that turns out to be_too_ fast for the USB
+For continious streaming that turns out to be _too_ fast for the USB
 link, so the next available option is the 2.25Mbps that we use. ....
 You can safely use the 4.5Mbps setting if your debug data
 is bursty, or if you're using a different CPU to the STM32F103 as your BMP
