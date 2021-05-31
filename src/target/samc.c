@@ -146,6 +146,29 @@ const struct command_s samc_cmd_list[] = {
 /* Component ID */
 #define SAMC_CID_VALUE			0xB105100D
 
+/* Devsel bitfield */
+enum samc_processor {ARM_Cortex_M0plus = 1, ARM_Cortex_M23 = 2};
+const char* samc_processor_strings[] = {"", "ARM_Cortex_M0plus", "ARM_Cortex_M23"};
+
+enum samc_family {SAMD = 0, SAML = 1, SAMC = 2};
+const char* samc_family_strings[] = {"SAMD", "SAML", "SAMC"};
+
+enum samc_series {SAM_20 = 0, SAM_21 = 1, SAM_22 = 2, SAM_10 = 2, SAM_11 = 3, SAM_09 = 4};
+const char* samc_series_strings[] = {"20", "21", "22 or 10", "11", "09"};
+
+union samc_did {
+	uint32_t word;
+	struct {
+		uint8_t devsel		: 8;
+		uint8_t revision	: 4;
+		uint8_t die		: 4;
+		enum samc_series series	: 6;
+		uint8_t reserved	: 1;
+		enum samc_family family	: 5;
+		enum samc_processor processor	: 4;
+	} reg;
+};
+
 /* Family parts */
 struct samc_part {
 	uint8_t devsel;
@@ -418,6 +441,12 @@ bool samc_probe(target *t)
 
 	uint32_t ctrlstat = target_mem_read32(t, SAMC_DSU_CTRLSTAT);
 	struct samc_descr samc = samc_parse_device_id(did);
+	union samc_did new_did;
+	new_did.word = did;
+	DEBUG_WARN("did is: 0x%x\n", new_did.word);
+	DEBUG_WARN("processor is: %s\n", samc_processor_strings[new_did.reg.processor]);
+	DEBUG_WARN("family is: %s\n", samc_family_strings[new_did.reg.family]);
+	DEBUG_WARN("series is: %s\n", samc_series_strings[new_did.reg.series]);
 
 	/* Protected? */
 	bool protected = (ctrlstat & SAMC_STATUSB_PROT);
